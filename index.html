@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Platformer</title>
+		<style>body { margin: 0; }</style>
+	</head>
+	<body>
+	  <div class="game"></div>
+	  <!--Three.js-->
+		<script src="scripts/three.js"></script>
+		<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.min.js"></script>-->
+		
+		<!--Stats-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
+    <script type="module"></script>
+    
+    <!--Fire Base-->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBHLX4137xTl8dd77M6XJira4YpaHzYJOQ",
+        authDomain: "online-platformer-f0211.firebaseapp.com",
+        databaseURL: "https://online-platformer-f0211-default-rtdb.firebaseio.com",
+        projectId: "online-platformer-f0211",
+        storageBucket: "online-platformer-f0211.appspot.com",
+        messagingSenderId: "747199554950",
+        appId: "1:747199554950:web:a0fe3bac8808ffbec07807",
+        measurementId: "G-EH8G70Y9Y4"
+      };
+      firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <!--Main code-->
+		<script src="scripts/app.js"></script>
+		
+		<!--Arrow keys no scroll-->
+		<script>
+		  window.addEventListener(
+        "keydown",
+        (e) => {
+          if (
+            ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(
+              e.code
+            )
+          ) {
+            e.preventDefault();
+          }
+        },
+        false
+      );
+		</script>
+		<p></p>
+	</body>
+</html>
