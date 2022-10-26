@@ -397,7 +397,7 @@ function initGame() {
   });
   allPlayersRef.on("child_removed", (snapshot) => {
     const removedPlayer = snapshot.val();
-    scene.remove(playerCubes[removedPlayer.id]);
+    scene.remove(playerCubes[removedPlayer.id].cube);
     playerCubes[removedPlayer.id] = undefined;
   });
   
@@ -468,6 +468,9 @@ function initGame() {
       // Set camera to look at guy
       moveCamera(x, y, times);
     }
+    }else{
+      xVel = 0;
+      yVel = 0;
     }
     Object.keys(players).forEach((i) => {
       if(x+0.4 > players[i].x-0.4 && x-0.4 < players[i].x+0.4 && y+0.4 > players[i].y-0.4 && y-0.4 < players[i].y+0.4 && playerId != i){
@@ -507,14 +510,31 @@ function initGame() {
     let itId;
     Object.keys(players).forEach((i) => {
       if(!playerCubes[i]){
-        playerCubes[i] = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({color: players[i].color}));
-        playerCubes[i].scale.x = 0.8;
-        playerCubes[i].scale.y = 0.8;
-        playerCubes[i].scale.z = i == playerId ? 0.8 : 0.79;
-        scene.add(playerCubes[i]);
+        playerCubes[i] = {};
+        playerCubes[i].cube = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({color: players[i].color}));
+        playerCubes[i].cube.scale.x = 0.8;
+        playerCubes[i].cube.scale.y = 0.8;
+        playerCubes[i].cube.scale.z = i == playerId ? 0.8 : 0.79;
+        scene.add(playerCubes[i].cube);
+        playerCubes[i].px = 0;
+        playerCubes[i].py = 0;
       }
-      playerCubes[i].position.x = players[i].x;
-      playerCubes[i].position.y = players[i].y;
+      if(playerCubes[i].px != players[i].x || playerCubes[i].py != players[i].y){
+        playerCubes[i].velX = players[i].velX;
+        playerCubes[i].velY = players[i].velY;
+        playerCubes[i].px = players[i].x;
+        playerCubes[i].py = players[i].y;
+        playerCubes[i].cube.position.x = players[i].x;
+        playerCubes[i].cube.position.y = players[i].y;
+      }else{
+        for(let q = 0; q < 100; q++){
+          playerCubes[i].velX*=Math.pow(0.75, 1/100);
+          playerCubes[i].cube.position.x+=playerCubes[i].velX/100;
+          playerCubes[i].velY-=0.035/100;
+          playerCubes[i].velY*=Math.pow(0.98, 1/100);
+          playerCubes[i].cube.position.y+=playerCubes[i].velY/100;
+        }
+      }
       if(players[i].it == true){
         itId = i;
         it.position.x = players[i].x;
@@ -530,6 +550,8 @@ function initGame() {
     // Update FireBase
     players[playerId].x = x;
     players[playerId].y = y;
+    players[playerId].velX = xVel;
+    players[playerId].velY = yVel;
     playerRef.set(players[playerId]);
 
     for(let i = 0; i < effects.length; i++){
@@ -563,7 +585,9 @@ firebase.auth().onAuthStateChanged((user) => {
       x: 0,
       y: 0,
       it: false,
-      froze: false
+      froze: false,
+      velX: 0,
+      velY: 0,
     });
     
     playerRef.onDisconnect().remove();
